@@ -1,7 +1,12 @@
 package user
 
-import "net/http"
+import (
+	"go.mongodb.org/mongo-driver/mongo"
+	"net/http"
+)
 
-func SignIn(w http.ResponseWriter, r *http.Request) {
+func SignIn(coll *mongo.Collection) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
+	}
 }

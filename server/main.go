@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"github.com/piotrselak/smarthome-protokoly/server/handlers/user"
+	"github.com/piotrselak/smarthome-protokoly/server/modules/db"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -9,6 +11,15 @@ import (
 )
 
 func main() {
+	client := db.Init("localhost:27017")
+	database := client.Database("smarthome")
+	userCollection := database.Collection("user")
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
+
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -22,7 +33,7 @@ func main() {
 
 	// Important! Admin creates user (eg. landlord)
 	r.Route("/user", func(r chi.Router) {
-		r.Post("/", user.SignIn)
+		r.Post("/", user.SignIn(&userCollection))
 	})
 
 	http.ListenAndServe(":3000", r)
