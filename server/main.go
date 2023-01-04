@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"github.com/joho/godotenv"
 	"github.com/piotrselak/smarthome-protokoly/server/handlers/user"
 	"github.com/piotrselak/smarthome-protokoly/server/modules/db"
 
@@ -12,6 +14,11 @@ import (
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Print("Error loading .env file")
+	}
+
 	client := db.Init("localhost:27017")
 	database := client.Database("smarthome")
 	userCollection := database.Collection("user")
