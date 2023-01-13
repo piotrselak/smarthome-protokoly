@@ -1,16 +1,28 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"os"
 	"time"
 )
 
-var temperature chan float32 = make(chan float32)
+type Data struct {
+	Temperature float32
+}
+
+var temperature float32 = 24.0
 
 var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
+	var response Data
+
+	if err := json.Unmarshal(msg.Payload(), &response); err != nil {
+		panic(err)
+	}
+	temp := response.Temperature
+	temperature = temp
 }
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -22,14 +34,12 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 }
 
 func main() {
-	temperature <- 23.0
-	var broker = "localhost"
-	var port = 1883
+	room := os.Getenv("ROOM")
+	var broker = "tcp://localhost:1883"
+
 	opts := mqtt.NewClientOptions()
-	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port))
-	opts.SetClientID(os.Getenv("CLIENT_ID"))
-	opts.SetUsername(os.Getenv("ROOM"))
-	//opts.SetPassword("public")
+	opts.AddBroker(broker)
+	opts.SetClientID("temp-sensor-" + room)
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
@@ -38,23 +48,20 @@ func main() {
 		panic(token.Error())
 	}
 
-	//sub(client)
-	publish(client)
-
-}
-
-func sub(client mqtt.Client) {
-	topic := "topic/temperature-in-" + os.Getenv("ROOM")
-	token := client.Subscribe(topic, 1, nil)
+	token := client.Subscribe("topic/temperature-in"+room, 1, nil)
 	token.Wait()
-	fmt.Printf("Subscribed to topic %s", topic)
-}
+	fmt.Printf("Subscribed to topic %s\n", "topic/temperature-out-in"+room)
 
-func publish(client mqtt.Client) {
 	for {
-		msg := <-temperature
-		token := client.Publish("topic/temperature-out-"+os.Getenv("ROOM"), 0, false, msg)
+		data := Data{Temperature: temperature}
+		messageJSON, err := json.Marshal(data)
+		if err != nil {
+			panic(err)
+		}
+
+		token = client.Publish("topic/temperature-out"+room, 0, false, messageJSON)
 		token.Wait()
 		time.Sleep(5 * time.Second)
+		fmt.Println(temperature)
 	}
 }
