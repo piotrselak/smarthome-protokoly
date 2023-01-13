@@ -36,7 +36,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
+		_, _ = w.Write([]byte("welcome"))
 	})
 
 	// Important! Admin creates user (eg. landlord)
@@ -44,5 +44,5 @@ func main() {
 		r.Post("/", user.SignIn(userCollection))
 	})
 
-	http.ListenAndServe(":3000", r)
+	_ = http.ListenAndServe(":3000", r)
 }
