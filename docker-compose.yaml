@@ -5,10 +5,11 @@ services:
     ports:
       - "8080:8080"
       - "1883:1883"
+
   mongodb:
     image: mongo:latest
     ports:
-      - 27017:27017
+      - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=pass
