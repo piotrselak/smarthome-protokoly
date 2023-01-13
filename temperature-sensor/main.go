@@ -35,7 +35,7 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 
 func main() {
 	room := os.Getenv("ROOM")
-	var broker = "tcp://localhost:1883"
+	var broker = "tcp://mqtt:1883"
 
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(broker)
@@ -48,9 +48,9 @@ func main() {
 		panic(token.Error())
 	}
 
-	token := client.Subscribe("topic/temperature-in"+room, 1, nil)
+	token := client.Subscribe("topic/temperature-in-"+room, 1, nil)
 	token.Wait()
-	fmt.Printf("Subscribed to topic %s\n", "topic/temperature-out-in"+room)
+	fmt.Printf("Subscribed to topic %s\n", "topic/temperature-out-in-"+room)
 
 	for {
 		data := Data{Temperature: temperature}
@@ -59,9 +59,8 @@ func main() {
 			panic(err)
 		}
 
-		token = client.Publish("topic/temperature-out"+room, 0, false, messageJSON)
+		token = client.Publish("topic/temperature-out-"+room, 0, false, messageJSON)
 		token.Wait()
 		time.Sleep(5 * time.Second)
-		fmt.Println(temperature)
 	}
 }

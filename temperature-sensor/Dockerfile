@@ -9,6 +9,6 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /temp-sensor
+RUN go build
 
-CMD [ "/temp-sensor" ]
+CMD [ "./temperature-sensor" ]

@@ -13,3 +13,12 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=pass
+
+  temperature-sensor-room1:
+    build: ./temperature-sensor
+    environment:
+      - ROOM=room1
+      - WAIT_HOSTS=mqtt:1883
+    depends_on:
+      - mqtt
+
