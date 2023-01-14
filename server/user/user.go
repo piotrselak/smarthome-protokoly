@@ -12,7 +12,7 @@ import (
 
 func SignIn(coll *mongo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var requestUser domain.User
+		var requestUser domain.UserForAuth
 		jsonDecoder := json.NewDecoder(r.Body)
 		if err := jsonDecoder.Decode(&requestUser); err != nil {
 			errMsg, _ := json.Marshal([]byte("Invalid body."))
@@ -33,6 +33,7 @@ func SignIn(coll *mongo.Collection) http.HandlerFunc {
 		if err != nil {
 			panic(err) // change it
 		}
+
 		var user domain.User
 		_ = json.Unmarshal(jsonData, &user)
 

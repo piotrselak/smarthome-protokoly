@@ -15,7 +15,7 @@ export default function Login(props) {
 
   const onSubmit = (data) => {
     axios
-      .post("http://localhost:3000/auth", { ...data, "perm": 1 }) //perm isnt final
+      .post("http://localhost:3000/auth", data)
       .then(function (response) {
         props.setLogged(true);
         props.setCookie("user", response.data, {
@@ -24,7 +24,7 @@ export default function Login(props) {
         navigate("/")
       })
       .catch(function (error) {
-        console.log(error);
+        alert(error)
       });
   };
 

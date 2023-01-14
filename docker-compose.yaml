@@ -11,14 +11,6 @@ services:
     ports:
       - "27017:27017"
 
-#  server:
-#    build: ./server
-#    ports:
-#      - "3000:3000"
-#    depends_on:
-#      - mongodb
-#      - mqtt
-
   temperature-sensor-room1:
     build: ./temperature-sensor
     environment:
