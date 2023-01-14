@@ -2,10 +2,11 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/piotrselak/smarthome-protokoly/server/domain"
+	"github.com/piotrselak/smarthome-protokoly/server/pkg/auth"
 	"net/http"
 
-	"github.com/piotrselak/smarthome-protokoly/server/pkg/auth"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -25,19 +26,26 @@ func SignIn(coll *mongo.Collection) http.HandlerFunc {
 			errMsg, _ := json.Marshal("User not found")
 			w.WriteHeader(http.StatusNotFound)
 			w.Write(errMsg)
+			return
 		}
 
 		jsonData, err := json.MarshalIndent(result, "", "    ")
 		if err != nil {
-			panic(err)
+			panic(err) // change it
 		}
 		var user domain.User
 		_ = json.Unmarshal(jsonData, &user)
 
 		if user.Hash == requestUser.Hash {
-			jwt, _ := auth.GenerateJWT(user.Id, user.Perm)
-			jwtJson, _ := json.Marshal(jwt)
-			w.Write(jwtJson)
+			jwt, err := auth.GenerateJWT(user.Id, user.Perm)
+			if err != nil {
+				errMsg, _ := json.Marshal("Server couldn't generate jwt. Internal server error.")
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write(errMsg)
+				fmt.Println(err)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(jwt))
 		} else {
 			errMsg, _ := json.Marshal("Unauthorized")
 			w.WriteHeader(http.StatusUnauthorized)

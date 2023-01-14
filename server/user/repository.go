@@ -11,7 +11,7 @@ import (
 func fetchUser(coll *mongo.Collection, userId string) (bson.M, error) {
 	var result bson.M
 	err := coll.FindOne(context.Background(),
-		bson.D{{"id", userId}}).Decode(&result)
+		bson.D{{"_id", userId}}).Decode(&result)
 
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("No document was found")

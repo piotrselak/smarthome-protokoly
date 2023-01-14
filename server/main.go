@@ -13,7 +13,12 @@ import (
 )
 
 func main() {
-	client := db.Init("mongodb://localhost:27017")
+	//err := godotenv.Load(".env")
+	//if err != nil {
+	//	log.Fatal("Error loading .env file")
+	//}
+
+	client := db.Init("mongodb://localhost:27017") //fails if run in docker-compose
 	database := client.Database("smarthome")
 	userCollection := database.Collection("user")
 	defer func() {
@@ -43,15 +48,20 @@ func main() {
 		_, _ = w.Write([]byte("welcome"))
 	})
 
+	r.Post("/auth", user.SignIn(userCollection))
+
 	// Important! Admin creates user (eg. landlord)
 	r.Route("/user", func(r chi.Router) {
 		r.Use(user.AuthCtx)
-		r.Post("/", user.SignIn(userCollection))
 	})
 
 	r.Route("/room", func(r chi.Router) {
 		//r.Get("/")
 	})
 
-	_ = http.ListenAndServe(":3000", r)
+	err := http.ListenAndServe(":3000", r)
+
+	if err != nil {
+		panic(err)
+	}
 }

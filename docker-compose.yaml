@@ -10,15 +10,21 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=pass
+
+#  server:
+#    build: ./server
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - mongodb
+#      - mqtt
 
   temperature-sensor-room1:
     build: ./temperature-sensor
     environment:
       - ROOM=room1
-      - WAIT_HOSTS=mqtt:1883
+    restart: unless-stopped
     depends_on:
-      - mqtt
+      mqtt:
+        condition: service_started
 

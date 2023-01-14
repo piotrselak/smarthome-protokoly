@@ -11,4 +11,4 @@ COPY *.go ./
 
 RUN go build
 
-CMD [ "./temperature-sensor" ]
+CMD ./temperature-sensor

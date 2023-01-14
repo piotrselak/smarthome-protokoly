@@ -12,6 +12,8 @@
 *.so
 *.dylib
 
+secret_key*
+
 .env
 
 # Test binary, built with `go test -c`
