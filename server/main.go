@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"github.com/go-chi/cors"
+	"github.com/piotrselak/smarthome-protokoly/server/user"
 	"net/http"
 
-	"github.com/piotrselak/smarthome-protokoly/server/handlers/user"
-	"github.com/piotrselak/smarthome-protokoly/server/modules/db"
+	"github.com/piotrselak/smarthome-protokoly/server/pkg/db"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -30,7 +30,7 @@ func main() {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300,
 	}))
 
@@ -45,7 +45,12 @@ func main() {
 
 	// Important! Admin creates user (eg. landlord)
 	r.Route("/user", func(r chi.Router) {
+		r.Use(user.AuthCtx)
 		r.Post("/", user.SignIn(userCollection))
+	})
+
+	r.Route("/room", func(r chi.Router) {
+		//r.Get("/")
 	})
 
 	_ = http.ListenAndServe(":3000", r)

@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func FetchUser(coll *mongo.Collection, userId string) (bson.M, error) {
+func fetchUser(coll *mongo.Collection, userId string) (bson.M, error) {
 	var result bson.M
 	err := coll.FindOne(context.Background(),
 		bson.D{{"id", userId}}).Decode(&result)
