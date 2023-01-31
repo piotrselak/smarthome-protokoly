@@ -1,20 +1,19 @@
 const mongoose = require("mongoose");
 
-//const { MONGO_URI } = process.env; for docker-compose version
-const MONGO_URI = "mongodb://"
+const { MONGO_URI } = process.env;
+// const MONGO_URI = "mongodb://localhost:27017"
 
 exports.connect = () => {
     mongoose
         .connect(MONGO_URI, {
             useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true,
-            useFindAndModify: false,
+            useUnifiedTopology: true
         })
         .then(() => {
             console.log("Successfully connected to database");
         })
         .catch((error) => {
+            console.log(MONGO_URI)
             console.log("database connection failed. exiting now...");
             console.error(error);
             process.exit(1);
