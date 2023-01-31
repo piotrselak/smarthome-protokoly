@@ -50,7 +50,7 @@ func main() {
 
 	token := client.Subscribe("topic/temperature-in-"+room, 1, nil)
 	token.Wait()
-	fmt.Printf("Subscribed to topic %s\n", "topic/temperature-out-in-"+room)
+	fmt.Printf("Subscribed to topic %s\n", "topic/temperature-in-"+room)
 
 	for {
 		data := Data{Temperature: temperature}

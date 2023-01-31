@@ -1,0 +1,11 @@
+
+.forms {
+    display: flex;
+    gap: 10px;
+    justify-content: space-around;
+}
+
+.break {
+    background-color: black;
+    width: 1px;
+}

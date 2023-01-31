@@ -5,13 +5,12 @@ const User = require("./model/user");
 const auth = require("./middleware/auth");
 const jwt = require("jsonwebtoken");
 var cors = require('cors')
+const bcrypt = require('bcryptjs')
 
 const app = express();
 
 app.use(cors())
 app.use(express.json());
-
- // ! add hashing and test put
 
 app.post("/register", async (req, res) => {
     try {
@@ -29,10 +28,10 @@ app.post("/register", async (req, res) => {
         }
 
         const encryptedPassword = await bcrypt.hash(password, 10);
-
+        console.log(encryptedPassword)
         const user = await User.create({
             name,
-            encryptedPassword,
+            password: encryptedPassword,
             room,
             admin
         });
@@ -58,14 +57,14 @@ app.post("/login", async (req, res) => {
     try {
         const { name, password } = req.body;
 
-        if (!(name && password)) {
+        if (!name || !password) {
             res.status(400).send("All input is required");
             return
         }
 
         const user = await User.findOne({ name });
-
-        if (user && password === (await bcrypt.compare(password, user.password))) {
+	console.log(user)
+	if (user && (await bcrypt.compare(password, user.password))) {
             // Create token
             const token = jwt.sign(
                 { userId: user._id, room: user.room, admin: user.admin },
@@ -81,8 +80,7 @@ app.post("/login", async (req, res) => {
             // user
             res.status(200).json(user);
             return
-        }
-        res.status(400).send("Invalid Credentials");
+        } else res.status(400).send("Invalid Credentials");
     } catch (err) {
         console.log(err);
     }
