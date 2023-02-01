@@ -47,14 +47,18 @@ export default function Admin() {
             })
     }
 
-    function deleteUser(id) {
+    function deleteUser(user) {
         return () => axios
-            .delete(`http://localhost:10001/user/${id}`, {
+            .delete(`http://localhost:10001/user/${user._id}`, {
                 headers: {
                     "x-access-token": cookies.token
                 }
             })
             .then(() => {
+                if (user.name === localStorage.getItem('name')){
+                    removeCookie("token")
+                    navigate("/")
+                }
                 setChange(change+1)
             })
             .catch(err => {
@@ -92,7 +96,7 @@ export default function Admin() {
             {users.map(user => {
                 return <li key={user._id}>
                     <span>Name: {user.name}  Room: {user.room}  Admin: {`${user.admin}`}</span>
-                    <button onClick={deleteUser(user._id)}>X</button>
+                    <button onClick={deleteUser(user)}>X</button>
                     <button onClick={updateUser(user)}>Edit</button>
                 </li>
             })}
