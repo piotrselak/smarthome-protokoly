@@ -32,7 +32,10 @@ export default function Room() {
 
     return (
         <div>
+            <br/>
             <span>The WebSocket is currently {connectionStatus}</span><br/>
+
+            <br/>
 
             {message && <span>Temperature: {message.Temperature}</span>}
             <button onClick={() => {
@@ -47,6 +50,23 @@ export default function Room() {
             <br/><br/>
 
             {message && <span>Humidity: {message.Humidity} g/kg</span>}
+
+            <br/><br/>
+
+            {message && <span>Shutter closed: {`${message.Shutter}`}</span>}
+            {message && message.Shutter && <button onClick={() => {
+                sendMessage(`{"Room": "${room}", "Component": "Set-shutter", "Value": false}`)
+            }
+            }>Close</button>}
+            { message && !message.Shutter &&<button onClick={() => {
+                sendMessage(`{"Room": "${room}", "Component": "Set-shutter", "Value": true}`)
+            }
+            }>Open</button>}
+
+            <br/><br/>
+
+            {message && <span>Time: {message.Clock.slice(0, 19)} </span>}
+
         </div>
     );
 }

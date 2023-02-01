@@ -20,14 +20,20 @@ services:
       mongodb:
         condition: service_started
 
+  message-handler:
+    build: ./message-handler
+    ports:
+      - "11111:11111"
+    restart: unless-stopped
+    depends_on:
+      mqtt:
+        condition: service_started
+
   chat:
     build: ./chat
     ports:
       - "11112:11112"
     restart: unless-stopped
-    depends_on:
-      mongodb:
-        condition: service_started
 
   temperature-sensor-room1:
     build: ./temperature-sensor
@@ -40,6 +46,24 @@ services:
 
   humidity-sensor-room1:
     build: ./humidity-sensor
+    environment:
+      - ROOM=room1
+    restart: unless-stopped
+    depends_on:
+      mqtt:
+        condition: service_started
+
+  window-shutter-room1:
+    build: ./window-shutter
+    environment:
+      - ROOM=room1
+    restart: unless-stopped
+    depends_on:
+      mqtt:
+        condition: service_started
+
+  clock-room1:
+    build: ./clock
     environment:
       - ROOM=room1
     restart: unless-stopped

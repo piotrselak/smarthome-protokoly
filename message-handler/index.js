@@ -4,7 +4,7 @@ const { WebSocketServer } = require("ws");
 const wss = new WebSocketServer({ port: 11111 });
 
 const mqtt = require("mqtt");
-const client = mqtt.connect("mqtt://localhost:1883");
+const client = mqtt.connect("mqtt://mqtt:1883");
 
 const data = {};
 
@@ -21,6 +21,10 @@ wss.on("connection", function connection(ws) {
       const jsonData = JSON.parse(stringData);
       client.publish(jsonData.Room, stringData);
       console.log("set temperature");
+    } else if (stringData.match(/Set-shutter/)) {
+      const jsonData = JSON.parse(stringData);
+      client.publish(jsonData.Room, stringData);
+      console.log("set shutter");
     } else if (stringData.match(/room/)) {
       console.log("new connection: %s", stringData);
       ws.id = stringData;
