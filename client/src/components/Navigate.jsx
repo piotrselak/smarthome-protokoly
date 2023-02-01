@@ -12,11 +12,14 @@ export default function Navigate() {
         {!cookies.token && <button onClick={() => {
             navigate("/auth")
         }}>Authorize</button>}
-        <button onClick={() => {
+        {cookies.token && <button onClick={() => {
             navigate("/room")
-        }}>Room</button>
-        <button onClick={() => {
+        }}>Room</button>}
+        {cookies.token && <button onClick={() => {
             navigate("/chat")
-        }}>Chat</button>
+        }}>Chat</button>}
+        {cookies.token && <button onClick={() => {
+            navigate("/admin")
+        }}>Admin</button>}
     </div>
 }

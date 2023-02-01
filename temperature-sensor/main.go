@@ -9,8 +9,9 @@ import (
 )
 
 type Data struct {
+	Room string
 	Component string
-	Temperature float32
+	Value float32
 }
 
 var temperature float32 = 24.0
@@ -22,8 +23,11 @@ var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Me
 	if err := json.Unmarshal(msg.Payload(), &response); err != nil {
 		panic(err)
 	}
-	temp := response.Temperature
-	temperature = temp
+
+	if response.Room == os.Getenv("ROOM") && response.Component == "Set-temperature" {
+		temp := response.Value
+		temperature = temp
+	}
 }
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -49,19 +53,19 @@ func main() {
 		panic(token.Error())
 	}
 
-	token := client.Subscribe("topic/temperature-in-"+room, 1, nil)
+	token := client.Subscribe(room, 1, nil)
 	token.Wait()
-	fmt.Printf("Subscribed to topic %s\n", "topic/temperature-in-"+room)
+	fmt.Printf("Subscribed to topic %s\n", room)
 
 	for {
-		data := Data{Component: "Temperature", Temperature: temperature}
+		data := Data{Room: room, Component: "Temperature", Value: temperature}
 		messageJSON, err := json.Marshal(data)
 		if err != nil {
 			panic(err)
 		}
-
-		token = client.Publish("topic/output-"+room, 0, false, messageJSON)
+		fmt.Println(string(messageJSON))
+		token = client.Publish("output", 0, false, messageJSON)
 		token.Wait()
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
