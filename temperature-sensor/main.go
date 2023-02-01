@@ -9,6 +9,7 @@ import (
 )
 
 type Data struct {
+	Component string
 	Temperature float32
 }
 
@@ -53,13 +54,13 @@ func main() {
 	fmt.Printf("Subscribed to topic %s\n", "topic/temperature-in-"+room)
 
 	for {
-		data := Data{Temperature: temperature}
+		data := Data{Component: "Temperature", Temperature: temperature}
 		messageJSON, err := json.Marshal(data)
 		if err != nil {
 			panic(err)
 		}
 
-		token = client.Publish("topic/temperature-out-"+room, 0, false, messageJSON)
+		token = client.Publish("topic/output-"+room, 0, false, messageJSON)
 		token.Wait()
 		time.Sleep(5 * time.Second)
 	}

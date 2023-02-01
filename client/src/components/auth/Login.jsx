@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useCookies} from "react-cookie";
 
+
 export default function Login() {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function Login() {
             .catch(err => console.log(err))
         if (res.status !== 200) return
         setCookie("token", res.data.token)
+        console.log(res.data)
+        localStorage.setItem('room', res.data.room);
         navigate("/")
     };
 
