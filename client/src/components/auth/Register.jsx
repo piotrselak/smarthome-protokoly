@@ -18,6 +18,7 @@ export default function Register() {
         }
         setCookie("token", res.data.token)
         localStorage.setItem('room', res.data.room);
+        localStorage.setItem('name', res.data.name);
         navigate("/")
     };
 

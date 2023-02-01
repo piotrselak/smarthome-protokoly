@@ -9,11 +9,11 @@ export default function Admin() {
     const [users, setUsers] = useState([])
 
     const [change, setChange] = useState(0)
-
+    const [phrase, setPhrase] = useState('')
 
     useEffect(() => {
         axios
-            .get("http://localhost:10001/user", {
+            .get(`http://localhost:10001/user/`, {
                 headers: {
                     "x-access-token": cookies.token
                 }
@@ -22,10 +22,30 @@ export default function Admin() {
                 setUsers(res.data)
             })
             .catch(err => {
-                alert(err)
-                navigate("/")
+                if (err.response.status !== 404) {
+                    alert(err)
+                    navigate("/")
+                }
             })
-    }, [users, change])
+    }, [change])
+
+    function search() {
+        axios
+            .get(`http://localhost:10001/user?phrase=${phrase}`, {
+                headers: {
+                    "x-access-token": cookies.token
+                }
+            })
+            .then(res => {
+                setUsers(res.data)
+            })
+            .catch(err => {
+                if (err.response.status !== 404) {
+                    alert(err)
+                    navigate("/")
+                }
+            })
+    }
 
     function deleteUser(id) {
         return () => axios
@@ -33,6 +53,9 @@ export default function Admin() {
                 headers: {
                     "x-access-token": cookies.token
                 }
+            })
+            .then(() => {
+                setChange(change+1)
             })
             .catch(err => {
                 alert(err)
@@ -63,6 +86,8 @@ export default function Admin() {
     }
 
     return <div>
+        <label>Search</label><input value={phrase} onChange={(e) => setPhrase(e.target.value)}/>
+        <button onClick={search}>Search</button>
         <ul>
             {users.map(user => {
                 return <li key={user._id}>

@@ -43,6 +43,10 @@ export default function Room() {
                 sendMessage(`{"Room": "${room}", "Component": "Set-temperature", "Value": ${message.Temperature - 1}}`)
             }
             }>Turn down</button>
+
+            <br/><br/>
+
+            {message && <span>Humidity: {message.Humidity} g/kg</span>}
         </div>
     );
 }

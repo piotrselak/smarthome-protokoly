@@ -17,6 +17,7 @@ export default function Login() {
         setCookie("token", res.data.token)
         console.log(res.data)
         localStorage.setItem('room', res.data.room);
+        localStorage.setItem('name', res.data.name);
         navigate("/")
     };
 

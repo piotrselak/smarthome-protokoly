@@ -47,6 +47,6 @@ client.on("connect", function () {
 client.on("message", function (topic, message) {
   const parsed = JSON.parse(message.toString());
   if (!data[parsed.Room]) data[parsed.Room] = {};
-
+  console.log(parsed);
   data[parsed.Room][parsed.Component] = parsed.Value;
 });

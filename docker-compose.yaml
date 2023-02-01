@@ -5,12 +5,29 @@ services:
     ports:
       - "8081:8080"
       - "1883:1883"
-        #volumes:
-      #- "./conf:/opt/hivemq/conf/"
+
   mongodb:
     image: mongo:latest
     ports:
       - "27017:27017"
+
+  auth:
+    build: ./auth
+    ports:
+      - "10001:10001"
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_started
+
+  chat:
+    build: ./chat
+    ports:
+      - "11112:11112"
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_started
 
   temperature-sensor-room1:
     build: ./temperature-sensor
@@ -21,11 +38,11 @@ services:
       mqtt:
         condition: service_started
 
-  auth:
-    build: ./auth
-    ports:
-      - "10001:10001"
+  humidity-sensor-room1:
+    build: ./humidity-sensor
+    environment:
+      - ROOM=room1
     restart: unless-stopped
     depends_on:
-      mongodb:
+      mqtt:
         condition: service_started
